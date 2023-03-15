@@ -3,6 +3,7 @@ package com.example.EventsProject.Controllers;
 import com.example.EventsProject.Entities.User;
 import com.example.EventsProject.Repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -32,11 +33,20 @@ public class UserController {
 //        model.addAttribute("user", user);
 //        return "signup_form";
 //    }
-    @GetMapping("/register")
-    public String showRegistrationForm(Model model) {
-        model.addAttribute("user", new User());
+@GetMapping("/register")
+public String showRegistrationForm(Model model) {
+    model.addAttribute("user", new User());
 
-        return "signup_form";
+    return "signup_form";
+}
+    @PostMapping("/process_register")
+    public String processRegister(User user) {
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        String encodedPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(encodedPassword);
+
+        userRepository.save(user);
+
+        return "register_success";
     }
-
 }
